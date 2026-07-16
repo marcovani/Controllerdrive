@@ -482,7 +482,7 @@ function importBackup(file){
     try{
       const data = JSON.parse(e.target.result);
       if(!data || !Array.isArray(data.lancamentos)) throw new Error('formato inválido');
-      if(confirm('Importar este backup vai SUBSTITUIR os dados atuais do app (uma cópia de segurança dos dados atuais será mantida). Continuar?')){
+      if(confirm('Importar este backup vai SUBSTITUIR os dados antigos do app (uma cópia de segurança dos dados atuais será mantida). Continuar?')){
         pushBackup(); // guarda estado atual antes de sobrescrever
         state = data;
         saveData();
@@ -568,7 +568,6 @@ function renderModal(){
     </div>
   </div>`;
   
-  // Remove modal anterior se houver para evitar duplicados no append
   const oldModal = document.querySelector('.modal-bg');
   if(oldModal) oldModal.remove();
   
@@ -584,7 +583,6 @@ function setFormField(k, v, forceRender = false){
 
 function parseInputFloat(val) {
   if(!val) return 0;
-  // Substitui vírgula por ponto para converter corretamente para Float do JS
   const cleanVal = String(val).replace(',', '.');
   return Number(cleanVal) || 0;
 }
@@ -626,7 +624,7 @@ function salvarLancamento(){
         obs: f.obs||''
       };
     }
-    toast('Lançamento atualizado');
+    toast('Lançamento updated');
   }
   saveData();
   modal = null;
@@ -648,7 +646,6 @@ state = loadState();
 if(!localStorage.getItem(STORAGE_KEY)){ saveData(); }
 render();
 
-// Autosave de segurança extra (garante persistência mesmo em fechamentos abruptos)
 window.addEventListener('beforeunload', ()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} });
 </script>
 </body>
