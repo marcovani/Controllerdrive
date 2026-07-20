@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>Meu Ganho — Controle Financeiro</title>
+<style>
+  :root{
+    --bg:#0a0c0b;
+    --card:#151816;
+    --card2:#1c201d;
+    --border:#262b27;
+    --green:#00e676;
+    --green-dim:#0a3d28;
+    --text:#f2f4f2;
+    --muted:#8d9791;
+    --danger:#ff5470;
+    --blue:#4fc3f7;
+    --orange:#ffb74d;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{background:var(--bg);}
+  body{margin:0;background:
+      radial-gradient(600px 300px at 50% -80px, rgba(0,230,118,.10), transparent 70%),
+      var(--bg);
+    color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+    -webkit-font-smoothing:antialiased;}
+  #app{max-width:480px;margin:0 auto;min-height:100vh;padding-bottom:96px;position:relative;}
+  header.top{position:sticky;top:0;background:rgba(9,11,10,.85);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);padding:20px 20px 16px;z-index:10;border-bottom:1px solid var(--border);}
+  header.top h1{font-size:23px;margin:0;font-weight:800;letter-spacing:-.3px;}
+  header.top p{margin:3px 0 0;color:var(--muted);font-size:13px;}
+  main{padding:16px;animation:fadeIn .25s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+  .card{background:linear-gradient(180deg,var(--card),#12140f);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 8px 24px -12px rgba(0,0,0,.5);}
+  .card h3{margin:0 0 10px;font-size:14px;color:var(--muted);font-weight:700;letter-spacing:.2px;text-transform:uppercase;font-size:12px;}
+  .row{display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .btn{background:transparent;border:1.5px solid var(--green);color:var(--green);border-radius:14px;padding:14px;font-size:15px;font-weight:700;width:100%;cursor:pointer;transition:transform .12s ease, opacity .12s ease;}
+  .btn.solid{background:linear-gradient(135deg,#00ff87,#00c766);color:#04140c;border:none;box-shadow:0 6px 18px -6px rgba(0,230,118,.5);}
+  .btn.danger{border-color:var(--danger);color:var(--danger);}
+  .btn.ghost{border:1.5px solid var(--border);color:var(--text);}
+  .btn:active{transform:scale(.97);opacity:.85;}
+  input,select,textarea{width:100%;background:var(--card2);border:1.5px solid var(--border);color:var(--text);border-radius:13px;padding:12px 13px;font-size:15px;margin-top:6px;font-family:inherit;transition:border-color .15s ease;}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green);}
+  label{font-size:12.5px;color:var(--muted);display:block;margin-top:12px;font-weight:600;}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pill{display:inline-block;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;}
+  .pill.green{background:rgba(0,230,118,.15);color:var(--green);}
+  .pill.blue{background:rgba(79,195,247,.15);color:var(--blue);}
+  .tabbar{display:flex;gap:6px;background:var(--card2);border-radius:14px;padding:5px;margin-bottom:14px;overflow-x:auto;border:1px solid var(--border);}
+  .tabbar button{flex:1;background:none;border:none;color:var(--muted);padding:10px 6px;border-radius:10px;font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;transition:background .15s ease,color .15s ease;}
+  .tabbar button.active{background:var(--green);color:#04140c;box-shadow:0 4px 12px -4px rgba(0,230,118,.5);}
+  .entry{background:var(--card2);border-radius:16px;padding:14px 15px;margin-bottom:10px;border:1px solid var(--border);transition:border-color .15s ease;}
+  .entry:active{border-color:var(--green);}
+  .entry .top-row{display:flex;justify-content:space-between;align-items:flex-start;}
+  .entry .valor{font-size:19px;font-weight:800;color:var(--green);}
+  .entry .meta{color:var(--muted);font-size:12.5px;margin-top:4px;}
+  .fab{position:fixed;bottom:82px;left:50%;transform:translateX(-50%);width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,#00ff87,#00c766);color:#04140c;border:none;font-size:28px;font-weight:900;box-shadow:0 8px 24px -4px rgba(0,230,118,.55);cursor:pointer;z-index:20;transition:transform .12s ease;}
+  .fab:active{transform:translateX(-50%) scale(.92);}
+  nav.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(11,13,12,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:9px 6px calc(9px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;}
+  nav.bottom button{background:none;border:none;color:var(--muted);font-size:10.5px;display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer;padding:5px 10px;border-radius:12px;font-weight:600;transition:color .15s ease,background .15s ease;}
+  nav.bottom button.active{color:var(--green);background:rgba(0,230,118,.08);}
+  .progress-ring{width:156px;height:156px;margin:4px auto 0;position:relative;}
+  .progress-ring svg{transform:rotate(-90deg);filter:drop-shadow(0 0 10px rgba(0,230,118,.35));}
+  .progress-ring circle{transition:stroke-dashoffset .5s ease;}
+  .progress-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .progress-center .pct{font-size:27px;font-weight:900;color:var(--green);}
+  .stat-box{border-radius:16px;padding:13px 15px;border:1.5px solid var(--border);background:rgba(255,255,255,.015);}
+  .stat-box .label{font-size:11.5px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+  .stat-box .value{font-size:17px;font-weight:800;margin-top:3px;}
+  .empty{text-align:center;color:var(--muted);padding:60px 24px;font-size:14px;line-height:1.6;}
+  .empty .big{font-size:44px;margin-bottom:14px;}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:50;display:flex;align-items:flex-end;animation:fadeIn2 .2s ease;}
+  @keyframes fadeIn2{from{opacity:0;}to{opacity:1;}}
+  .modal{background:linear-gradient(180deg,#161a17,#101210);width:100%;max-width:480px;margin:0 auto;border-radius:24px 24px 0 0;padding:22px 20px;max-height:90vh;overflow-y:auto;border-top:1px solid #2a302b;animation:slideUp .25s cubic-bezier(.22,1,.36,1);}
+  @keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+  .modal h2{margin:0 0 6px;font-size:20px;font-weight:800;}
+  .closeX{position:absolute;top:16px;right:18px;background:var(--card2);border:none;color:var(--text);width:34px;height:34px;border-radius:50%;font-size:15px;cursor:pointer;}
+  .plataforma-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
+  .plat-btn{background:var(--card2);border:1.5px solid var(--border);border-radius:13px;padding:11px 4px;text-align:center;cursor:pointer;font-size:11px;color:var(--muted);font-weight:700;transition:all .15s ease;}
+  .plat-btn.sel{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.1);box-shadow:0 0 0 1px rgba(0,230,118,.3) inset;}
+  .plat-btn .ico{font-size:21px;display:block;margin-bottom:4px;}
+  .toast{position:fixed;bottom:104px;left:50%;transform:translateX(-50%);background:#151816;border:1px solid var(--green);color:var(--text);padding:12px 22px;border-radius:14px;font-size:13.5px;z-index:100;font-weight:600;box-shadow:0 8px 24px -6px rgba(0,0,0,.6);animation:toastIn .2s ease;}
+  @keyframes toastIn{from{opacity:0;transform:translate(-50%,8px);}to{opacity:1;transform:translate(-50%,0);}}
+  .backup-item{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--border);font-size:13px;}
+  .backup-item:last-child{border-bottom:none;}
+  .type-toggle{display:flex;gap:8px;margin-top:6px;}
+  .type-toggle button{flex:1;padding:11px;border-radius:13px;border:1.5px solid var(--border);background:var(--card2);color:var(--muted);font-weight:700;font-size:13px;transition:all .15s ease;}
+  .type-toggle button.sel{border-color:var(--green);color:var(--green);background:rgba(0,230,118,.1);}
+  .metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;}
+  .metric-box{border:1.5px solid var(--green);border-radius:14px;padding:10px 6px;text-align:center;background:rgba(0,230,118,.04);}
+  .metric-label{font-size:10.5px;color:var(--muted);font-weight:700;}
+  .metric-value{font-size:14.5px;font-weight:800;margin-top:4px;color:var(--text);}
+  .cat-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);}
+  .cat-ico{width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+  .cat-info{flex:1;}
+  .cat-name{font-weight:700;font-size:13.5px;}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ====================== CONFIG ====================== */
+const STORAGE_KEY = 'mg_data_v1';
+const BACKUP_KEY = 'mg_backups_v1';
+const MAX_BACKUPS = 20;
+
+const PLATAFORMAS = [
+  {id:'uber', nome:'Uber', ico:'🚗'},
+  {id:'99', nome:'99', ico:'🟡'},
+  {id:'99food', nome:'99Food', ico:'🍔'},
+  {id:'ifood', nome:'iFood', ico:'🍱'},
+  {id:'indriver', nome:'inDriver', ico:'🚕'},
+  {id:'lalamove', nome:'Lalamove', ico:'📦'},
+  {id:'particular', nome:'Particular', ico:'🤝'},
+  {id:'outro', nome:'Outro', ico:'➕'},
+];
+
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function toLocalISO(d){ const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${day}`; }
+function todayISO(){ return toLocalISO(new Date()); }
+function mondayOf(d){ const day=d.getDay(); const diff=(day===0?6:day-1); const start=new Date(d); start.setDate(d.getDate()-diff); return start; }
+function fmtMoney(v){ return (v||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'}); }
+function fmtDate(iso){ const [y,m,d]=iso.split('-'); return `${d}/${m}/${y}`; }
+const DIAS_SEMANA = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+/* ====================== STATE ====================== */
+let state = null;
+
+function defaultState(){
+  return {
+    perfil: { nome: 'Motorista' },
+    veiculo: { modelo:'', ano:'', tipoVeiculo:'Combustão', status:'Próprio', protecao:'Nenhuma', appsFavoritos:[] },
+    custosFixos: [
+      {id: uid(), nome:'Aluguel do Veículo', valor:0},
+      {id: uid(), nome:'Financiamento', valor:0},
+      {id: uid(), nome:'Seguro', valor:0},
+      {id: uid(), nome:'IPVA', valor:0},
+    ],
+    metas: { diaria: 100, semanal: 700, mensal: 3000 },
+    lancamentos: []
+  };
+}
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(raw){ const parsed = JSON.parse(raw); if(parsed && Array.isArray(parsed.lancamentos)) return parsed; }
+  }catch(e){ console.error('erro ao ler dados, tentando backup', e); }
+  // fallback: tenta o backup mais recente
+  try{
+    const backups = JSON.parse(localStorage.getItem(BACKUP_KEY) || '[]');
+    if(backups.length){ return JSON.parse(backups[0].data); }
+  }catch(e){}
+  return defaultState();
+}
+
+function pushBackup(){
+  try{
+    let backups = JSON.parse(localStorage.getItem(BACKUP_KEY) || '[]');
+    backups.unshift({ ts: Date.now(), data: JSON.stringify(state) });
+    if(backups.length > MAX_BACKUPS) backups = backups.slice(0, MAX_BACKUPS);
+    localStorage.setItem(BACKUP_KEY, JSON.stringify(backups));
+  }catch(e){ console.error('falha ao gravar backup', e); }
+}
+
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  pushBackup();
+}
+
+/* ====================== ROUTER / RENDER ====================== */
+let currentTab = 'painel';
+let periodTab = 'mensal'; // diario|semanal|mensal|personalizado
+let customRange = { de: todayISO(), ate: todayISO() };
+let selectedDiaISO = todayISO();
+let despesasAbertas = false;
+function toggleDespesasDetalhe(){ despesasAbertas = !despesasAbertas; render(); }
+let modal = null; // {type:'registrar'|'editar'|'backups', data}
+
+function toast(msg){
+  const t = document.createElement('div');
+  t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 2200);
+}
+
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <header class="top">
+      <h1>${titleFor(currentTab)}</h1>
+      <p>${subtitleFor(currentTab)}</p>
+    </header>
+    <main id="main"></main>
+    <button class="fab" onclick="openRegistrar()">+</button>
+    <nav class="bottom">
+      ${navBtn('painel','Painel','📊')}
+      ${navBtn('lancamentos','Lançamentos','📋')}
+      ${navBtn('veiculo','Veículo','🚙')}
+      ${navBtn('ajustes','Ajustes','⚙️')}
+    </nav>
+  `;
+  document.getElementById('main').innerHTML = renderMain();
+  if(modal) renderModal();
+}
+
+function navBtn(id,label,ico){
+  return `<button class="${currentTab===id?'active':''}" onclick="setTab('${id}')"><span style="font-size:19px">${ico}</span>${label}</button>`;
+}
+function setTab(t){ currentTab=t; render(); }
+
+function titleFor(t){
+  return {painel:'Olá, '+state.perfil.nome, lancamentos:'Lançamentos', veiculo:'Veículo', ajustes:'Configurações'}[t];
+}
+function subtitleFor(t){
+  return {painel:'Controle seus ganhos de forma fácil', lancamentos:'Suas corridas e diárias registradas', veiculo:'Informações do seu veículo', ajustes:'Custos, metas e backup'}[t];
+}
+
+function renderMain(){
+  if(currentTab==='painel') return renderPainel();
+  if(currentTab==='lancamentos') return renderLancamentos();
+  if(currentTab==='veiculo') return renderVeiculo();
+  if(currentTab==='ajustes') return renderAjustes();
+}
+
+/* ====================== PERIOD FILTER ====================== */
+function getPeriodRange(){
+  const now = new Date();
+  if(periodTab==='diario'){ return {de:selectedDiaISO, ate:selectedDiaISO}; }
+  if(periodTab==='semanal'){
+    const start = mondayOf(now);
+    return {de:toLocalISO(start), ate:todayISO()};
+  }
+  if(periodTab==='mensal'){
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    return {de:toLocalISO(start), ate:todayISO()};
+  }
+  return {de:customRange.de, ate:customRange.ate};
+}
+
+function filterLancamentos(range){
+  return state.lancamentos.filter(l => l.data>=range.de && l.data<=range.ate);
+}
+
+function totalCustosFixosMensal(){
+  return state.custosFixos.reduce((s,c)=>s+(Number(c.valor)||0),0);
+}
+
+function calcResumo(range){
+  const list = filterLancamentos(range);
+  const receita = list.reduce((s,l)=>s+(Number(l.valor)||0),0);
+  const despesasViagem = list.reduce((s,l)=>s+(Number(l.combustivel)||0)+(Number(l.outrasDespesas)||0),0);
+  const combustivel = list.reduce((s,l)=>s+(Number(l.combustivel)||0),0);
+  const outras = list.reduce((s,l)=>s+(Number(l.outrasDespesas)||0),0);
+  const totalKm = list.reduce((s,l)=>s+(Number(l.km)||0),0);
+  const totalHoras = list.reduce((s,l)=>s+(Number(l.horas)||0),0);
+  const dias = Math.max(1, Math.round((new Date(range.ate)-new Date(range.de))/86400000)+1);
+  const custoFixoProrateado = (totalCustosFixosMensal()/30)*dias;
+  const despesasTotais = despesasViagem + custoFixoProrateado;
+  const lucro = receita - despesasTotais;
+  const porPlataforma = {};
+  list.forEach(l=>{ porPlataforma[l.plataforma]=(porPlataforma[l.plataforma]||0)+(Number(l.valor)||0); });
+  const rPorHora = totalHoras>0 ? lucro/totalHoras : 0;
+  const rPorKm = totalKm>0 ? lucro/totalKm : 0;
+  const diasTrabalhados = new Set(list.map(l=>l.data)).size;
+  const corridas = list.length;
+  const mediaPorCorrida = corridas>0 ? receita/corridas : 0;
+  const mediaDeHoras = diasTrabalhados>0 ? totalHoras/diasTrabalhados : 0;
+  return {receita, despesasTotais, despesasViagem, combustivel, outras, custoFixoProrateado, lucro, porPlataforma, qtd:list.length, dias, totalKm, totalHoras, rPorHora, rPorKm, diasTrabalhados, corridas, mediaPorCorrida, mediaDeHoras};
+}
+
+function metaAtual(){
+  if(periodTab==='diario') return state.metas.diaria;
+  if(periodTab==='semanal') return state.metas.semanal;
+  if(periodTab==='mensal') return state.metas.mensal;
+  return state.metas.mensal; // aproximação p/ personalizado
+}
+
+/* ====================== PAINEL ====================== */
+function renderDiaStrip(){
+  const monday = mondayOf(new Date());
+  let btns = '';
+  for(let i=0;i<7;i++){
+    const d = new Date(monday); d.setDate(monday.getDate()+i);
+    const iso = toLocalISO(d);
+    const isToday = iso===todayISO();
+    const isSel = iso===selectedDiaISO;
+    const label = isToday ? 'Hoje' : DIAS_SEMANA[d.getDay()];
+    btns += `<button onclick="selectDia('${iso}')" style="flex:1;min-width:44px;border-radius:12px;padding:9px 2px;border:1.5px solid ${isSel?'var(--green)':'var(--border)'};background:${isSel?'rgba(0,230,118,.12)':'var(--card2)'};color:${isSel?'var(--green)':'var(--muted)'};font-weight:700;font-size:11px;cursor:pointer;">
+      <div>${label}</div><div style="font-size:13px;margin-top:2px;">${d.getDate()}</div>
+    </button>`;
+  }
+  return `<div class="row" style="gap:6px;margin-bottom:14px;">${btns}</div>`;
+}
+function selectDia(iso){ selectedDiaISO=iso; render(); }
+
+function renderPainel(){
+  const range = getPeriodRange();
+  const r = calcResumo(range);
+  const meta = metaAtual();
+  const pct = meta>0 ? Math.min(100, Math.round((r.receita/meta)*100)) : 0;
+  const circ = 2*Math.PI*62;
+  const dash = circ*(pct/100);
+
+  const platRows = Object.entries(r.porPlataforma).sort((a,b)=>b[1]-a[1]).map(([id,val])=>{
+    const p = PLATAFORMAS.find(x=>x.id===id) || {ico:'🔹',nome:id};
+    return `<div class="stat-box" style="flex:1;min-width:110px;"><div class="label">${p.ico} ${p.nome}</div><div class="value">${fmtMoney(val)}</div></div>`;
+  }).join('') || `<div class="empty" style="padding:16px;">Nenhum ganho registrado neste período.</div>`;
+
+  const metricBox = (label, value) => `<div class="metric-box"><div class="metric-label">${label}</div><div class="metric-value">${value}</div></div>`;
+
+  return `
+    <div class="tabbar">
+      <button class="${periodTab==='diario'?'active':''}" onclick="setPeriod('diario')">Diário</button>
+      <button class="${periodTab==='semanal'?'active':''}" onclick="setPeriod('semanal')">Semanal</button>
+      <button class="${periodTab==='mensal'?'active':''}" onclick="setPeriod('mensal')">Mensal</button>
+      <button class="${periodTab==='personalizado'?'active':''}" onclick="setPeriod('personalizado')">Personalizado</button>
+    </div>
+
+    ${periodTab==='diario' ? renderDiaStrip() : ''}
+
+    ${periodTab==='personalizado' ? `
+    <div class="card">
+      <div class="grid2">
+        <div><label>De</label><input type="date" value="${customRange.de}" onchange="customRange.de=this.value; render();"></div>
+        <div><label>Até</label><input type="date" value="${customRange.ate}" onchange="customRange.ate=this.value; render();"></div>
+      </div>
+    </div>` : ''}
+
+    <div class="card" style="text-align:center;">
+      <h3>Meta ${periodTab==='personalizado'?'do Período':periodTab.charAt(0).toUpperCase()+periodTab.slice(1)}</h3>
+      <div class="progress-ring">
+        <svg width="150" height="150">
+          <circle cx="75" cy="75" r="62" stroke="#232823" stroke-width="12" fill="none"/>
+          <circle cx="75" cy="75" r="62" stroke="#00e676" stroke-width="12" fill="none"
+            stroke-dasharray="${circ}" stroke-dashoffset="${circ-dash}" stroke-linecap="round"/>
+        </svg>
+        <div class="progress-center">
+          <div class="pct">${pct}%</div>
+        </div>
+      </div>
+      <div style="font-size:20px;font-weight:800;margin-top:8px;">${fmtMoney(r.receita)}</div>
+      <div style="color:var(--muted);font-size:13px;">de ${fmtMoney(meta)}</div>
+    </div>
+
+    <div class="card" style="border-color:rgba(79,195,247,.4);text-align:center;">
+      <div class="label" style="color:var(--blue)">Lucro Líquido</div>
+      <div style="font-size:22px;font-weight:900;color:var(--blue);margin-top:2px;">${fmtMoney(r.lucro)}</div>
+      <div style="color:var(--muted);font-size:12px;margin-top:2px;">${r.qtd} lançamento(s) no período</div>
+    </div>
+
+    <div class="card">
+      <h3 style="cursor:pointer;" onclick="toggleDespesasDetalhe()">Despesas por Categoria ${despesasAbertas?'▲':'▼'}</h3>
+      ${despesasAbertas ? `
+        <div class="cat-row"><span class="cat-ico" style="background:rgba(255,84,112,.15);">⛽</span><div class="cat-info"><div class="cat-name">Combustível</div></div><b>${fmtMoney(r.combustivel)}</b></div>
+        <div class="cat-row"><span class="cat-ico" style="background:rgba(255,183,77,.15);">📎</span><div class="cat-info"><div class="cat-name">Outras despesas</div></div><b>${fmtMoney(r.outras)}</b></div>
+        <div class="cat-row" style="border-bottom:none;"><span class="cat-ico" style="background:rgba(79,195,247,.15);">🏠</span><div class="cat-info"><div class="cat-name">Custos fixos (rateado)</div></div><b>${fmtMoney(r.custoFixoProrateado)}</b></div>
+      ` : `<div class="row"><span style="color:var(--muted);font-size:13px;">Total no período</span><b style="color:var(--danger);font-size:15px;">${fmtMoney(r.despesasTotais)}</b></div>`}
+    </div>
+
+    <h3 style="color:var(--muted);margin:6px 4px 8px;">Métricas de Performance</h3>
+    <div class="metrics-grid">
+      ${metricBox('Ganho do Período', fmtMoney(r.receita))}
+      ${metricBox('Média por Hora', r.totalHoras>0?fmtMoney(r.rPorHora):'—')}
+      ${metricBox('Média por Km', r.totalKm>0?fmtMoney(r.rPorKm):'—')}
+      ${metricBox('Total de Horas', r.totalHoras.toFixed(1).replace('.',',')+'h')}
+      ${metricBox('Média de Horas', r.mediaDeHoras>0?r.mediaDeHoras.toFixed(1).replace('.',',')+'h':'—')}
+      ${metricBox('Total de Km', r.totalKm.toFixed(1).replace('.',',')+' km')}
+      ${metricBox('Dias Trabalhados', r.diasTrabalhados)}
+      ${metricBox('Corridas', r.corridas)}
+      ${metricBox('Média por Corrida', r.corridas>0?fmtMoney(r.mediaPorCorrida):'—')}
+    </div>
+
+    <h3 style="color:var(--muted);margin:16px 4px 8px;">Receita por Plataforma</h3>
+    <div class="row" style="flex-wrap:wrap;gap:10px;">${platRows}</div>
+  `;
+}
+function setPeriod(p){ periodTab=p; if(p==='diario') selectedDiaISO=todayISO(); render(); }
+
+/* ====================== LANÇAMENTOS ====================== */
+let lancFiltro = { texto:'', tipo:'todos', plataforma:'todas' };
+
+function renderLancamentos(){
+  let list = [...state.lancamentos].sort((a,b)=> b.data.localeCompare(a.data) || b.createdAt-a.createdAt);
+
+  if(lancFiltro.tipo!=='todos') list = list.filter(l=>l.tipo===lancFiltro.tipo);
+  if(lancFiltro.plataforma!=='todas') list = list.filter(l=>l.plataforma===lancFiltro.plataforma);
+  if(lancFiltro.texto.trim()){
+    const q = lancFiltro.texto.trim().toLowerCase();
+    list = list.filter(l=>{
+      const p = PLATAFORMAS.find(x=>x.id===l.plataforma);
+      return (l.obs||'').toLowerCase().includes(q) || (p?p.nome.toLowerCase():'').includes(q) || fmtDate(l.data).includes(q);
+    });
+  }
+
+  const totalFiltrado = list.reduce((s,l)=>s+(Number(l.valor)||0),0);
+  const platOptions = PLATAFORMAS.map(p=>`<option value="${p.id}" ${lancFiltro.plataforma===p.id?'selected':''}>${p.ico} ${p.nome}</option>`).join('');
+
+  const filtroUI = `
+    <div class="card" style="padding:14px 16px;">
+      <input id="lancSearchInput" placeholder="🔎 Buscar por observação, plataforma ou data" value="${lancFiltro.texto}" oninput="setLancFiltro('texto',this.value)">
+      <div class="grid2" style="margin-top:10px;">
+        <select onchange="setLancFiltro('tipo',this.value)">
+          <option value="todos" ${lancFiltro.tipo==='todos'?'selected':''}>Todos os tipos</option>
+          <option value="Aplicativo" ${lancFiltro.tipo==='Aplicativo'?'selected':''}>📱 Aplicativo</option>
+          <option value="Particular" ${lancFiltro.tipo==='Particular'?'selected':''}>🤝 Particular</option>
+        </select>
+        <select onchange="setLancFiltro('plataforma',this.value)">
+          <option value="todas" ${lancFiltro.plataforma==='todas'?'selected':''}>Todas plataformas</option>
+          ${platOptions}
+        </select>
+      </div>
+    </div>
+    <div class="row" style="padding:0 4px 14px;">
+      <span style="color:var(--muted);font-size:12.5px;">${list.length} lançamento(s)</span>
+      <span style="color:var(--green);font-weight:800;font-size:14px;">${fmtMoney(totalFiltrado)}</span>
+    </div>
+  `;
+
+  if(!state.lancamentos.length){
+    return `<div class="empty"><div class="big">🧾</div>Nenhum lançamento ainda.<br>Toque no + para registrar sua primeira corrida ou diária.</div>`;
+  }
+  if(!list.length){
+    return filtroUI + `<div class="empty"><div class="big">🔍</div>Nenhum lançamento encontrado com esse filtro.</div>`;
+  }
+
+  return filtroUI + list.map(l=>{
+    const p = PLATAFORMAS.find(x=>x.id===l.plataforma) || {ico:'🔹',nome:l.plataforma};
+    const desp = (Number(l.combustivel)||0)+(Number(l.outrasDespesas)||0);
+    return `
+    <div class="entry" onclick="openEditar('${l.id}')">
+      <div class="top-row">
+        <div>
+          <span class="pill ${l.tipo==='Particular'?'blue':'green'}">${p.ico} ${p.nome}</span>
+          <div class="meta">📅 ${fmtDate(l.data)} ${l.km?(' · 🛣️ '+l.km+' km'):''}${l.horas?(' · ⏱ '+l.horas+'h'):''}</div>
+          ${l.obs?`<div class="meta">💬 ${l.obs}</div>`:''}
+        </div>
+        <div style="text-align:right;">
+          <div class="valor">${fmtMoney(l.valor)}</div>
+          ${desp>0?`<div class="meta" style="color:var(--danger)">- ${fmtMoney(desp)}</div>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+function setLancFiltro(k,v,doRender=true){
+  lancFiltro[k]=v;
+  if(doRender){
+    render();
+    if(k==='texto'){
+      const el = document.getElementById('lancSearchInput');
+      if(el){ el.focus(); const len=el.value.length; el.setSelectionRange(len,len); }
+    }
+  }
+}
+
+/* ====================== VEÍCULO ====================== */
+function renderVeiculo(){
+  const v = state.veiculo;
+  const appsBtns = PLATAFORMAS.map(p=>{
+    const sel = v.appsFavoritos.includes(p.id);
+    return `<div class="plat-btn ${sel?'sel':''}" onclick="toggleAppFav('${p.id}')"><span class="ico">${p.ico}</span>${p.nome}</div>`;
+  }).join('');
+  return `
+    <div class="card">
+      <label>Modelo do veículo</label>
+      <input value="${v.modelo}" oninput="updVeiculoField('modelo',this.value,false)" placeholder="Ex: Nivus">
+      <div class="grid2">
+        <div><label>Ano</label><input value="${v.ano}" onchange="updVeiculoField('ano',this.value)" placeholder="2022"></div>
+        <div><label>Tipo de Veículo</label>
+          <select onchange="updVeiculoField('tipoVeiculo',this.value)">
+            ${['Combustão','Híbrido','Elétrico'].map(o=>`<option ${v.tipoVeiculo===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="grid2">
+        <div><label>Status do Veículo</label>
+          <select onchange="updVeiculoField('status',this.value)">
+            ${['Próprio','Alugado','Financiado'].map(o=>`<option ${v.status===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+        </div>
+        <div><label>Proteção</label>
+          <select onchange="updVeiculoField('protecao',this.value)">
+            ${['Nenhuma','Seguro','Proteção Veicular'].map(o=>`<option ${v.protecao===o?'selected':''}>${o}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Aplicativos Favoritos</h3>
+      <div class="plataforma-grid">${appsBtns}</div>
+    </div>
+  `;
+}
+function updVeiculoField(f,val,doRender=true){ state.veiculo[f]=val; saveData(); if(doRender) render(); }
+function toggleAppFav(id){
+  const arr = state.veiculo.appsFavoritos;
+  const i = arr.indexOf(id);
+  if(i>-1) arr.splice(i,1); else arr.push(id);
+  saveData(); render();
+}
+
+/* ====================== AJUSTES ====================== */
+let ajustesTab = 'custos'; // custos | metas | backup
+function renderAjustes(){
+  return `
+    <div class="tabbar">
+      <button class="${ajustesTab==='custos'?'active':''}" onclick="setAjustesTab('custos')">Custos</button>
+      <button class="${ajustesTab==='metas'?'active':''}" onclick="setAjustesTab('metas')">Metas</button>
+      <button class="${ajustesTab==='backup'?'active':''}" onclick="setAjustesTab('backup')">Backup</button>
+    </div>
+    ${ajustesTab==='custos' ? renderCustos() : ajustesTab==='metas' ? renderMetas() : renderBackupTab()}
+  `;
+}
+function setAjustesTab(t){ ajustesTab=t; render(); }
+
+function renderCustos(){
+  const rows = state.custosFixos.map(c=>`
+    <div class="row" style="margin-bottom:10px;">
+      <input style="flex:2;margin-top:0;" value="${c.nome}" onchange="updCustoNome('${c.id}',this.value)">
+      <input style="flex:1;margin-top:0;" type="number" value="${c.valor}" onchange="updCustoValor('${c.id}',this.value)">
+      <button class="btn danger" style="width:auto;padding:10px 12px;" onclick="delCusto('${c.id}')">🗑</button>
+    </div>`).join('');
+  return `
+    <div class="card">
+      <h3>Despesas Fixas Mensais</h3>
+      ${rows}
+      <button class="btn ghost" onclick="addCusto()">+ Adicionar despesa fixa</button>
+      <div class="row" style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
+        <b>Total Mensal</b><b style="color:var(--green);font-size:17px;">${fmtMoney(totalCustosFixosMensal())}</b>
+      </div>
+    </div>
+  `;
+}
+function addCusto(){ state.custosFixos.push({id:uid(),nome:'Nova despesa',valor:0}); saveData(); render(); }
+function delCusto(id){ if(confirm('Remover esta despesa fixa?')){ state.custosFixos = state.custosFixos.filter(c=>c.id!==id); saveData(); render(); } }
+function updCustoNome(id,val){ const c=state.custosFixos.find(x=>x.id===id); c.nome=val; saveData(); }
+function updCustoValor(id,val){ const c=state.custosFixos.find(x=>x.id===id); c.valor=Number(val)||0; saveData(); render(); }
+
+function renderMetas(){
+  const m = state.metas;
+  return `
+    <div class="card">
+      <h3>Metas de Ganho</h3>
+      <label>Meta Diária</label>
+      <input type="number" value="${m.diaria}" onchange="updMeta('diaria',this.value)">
+      <label>Meta Semanal</label>
+      <input type="number" value="${m.semanal}" onchange="updMeta('semanal',this.value)">
+      <label>Meta Mensal</label>
+      <input type="number" value="${m.mensal}" onchange="updMeta('mensal',this.value)">
+    </div>
+  `;
+}
+function updMeta(f,val){ state.metas[f]=Number(val)||0; saveData(); }
+
+function renderBackupTab(){
+  let backups = [];
+  try{ backups = JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]'); }catch(e){}
+  const list = backups.slice(0,10).map((b,i)=>{
+    const dt = new Date(b.ts);
+    return `<div class="backup-item">
+      <span>${dt.toLocaleDateString('pt-BR')} às ${dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</span>
+      <button class="btn ghost" style="width:auto;padding:6px 12px;font-size:12px;" onclick="restoreBackup(${i})">Restaurar</button>
+    </div>`;
+  }).join('') || `<div class="meta" style="padding:8px 0;">Nenhum backup automático ainda.</div>`;
+
+  return `
+    <div class="card">
+      <h3>Seus dados nunca são apagados sozinhos</h3>
+      <p style="color:var(--muted);font-size:13px;line-height:1.5;">A cada alteração, o app salva automaticamente uma cópia de segurança neste dispositivo. Você também pode exportar um arquivo de backup para guardar fora do app.</p>
+      <button class="btn solid" onclick="exportBackup()">⬇️ Exportar backup (arquivo)</button>
+      <div style="height:10px;"></div>
+      <button class="btn ghost" onclick="document.getElementById('importFile').click()">⬆️ Importar backup</button>
+      <input type="file" id="importFile" accept="application/json" style="display:none" onchange="importBackup(this.files[0])">
+    </div>
+    <div class="card">
+      <h3>Backups automáticos recentes</h3>
+      ${list}
+    </div>
+  `;
+}
+
+function exportBackup(){
+  const blob = new Blob([JSON.stringify(state,null,2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+  a.href = url; a.download = `backup-meuganho-${ts}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+  toast('Backup exportado com sucesso');
+}
+
+function importBackup(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = (e)=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data || !Array.isArray(data.lancamentos)) throw new Error('formato inválido');
+      if(confirm('Importar este backup vai SUBSTITUIR os dados atuais do app (uma cópia de segurança dos dados atuais será mantida). Continuar?')){
+        pushBackup(); // guarda estado atual antes de sobrescrever
+        state = data;
+        saveData();
+        render();
+        toast('Backup importado com sucesso');
+      }
+    }catch(err){ alert('Não foi possível ler este arquivo de backup.'); }
+  };
+  reader.readAsText(file);
+}
+
+function restoreBackup(index){
+  let backups = JSON.parse(localStorage.getItem(BACKUP_KEY)||'[]');
+  const b = backups[index];
+  if(!b) return;
+  if(confirm('Restaurar este backup? Os dados atuais serão guardados como um novo backup antes da restauração.')){
+    pushBackup();
+    state = JSON.parse(b.data);
+    saveData();
+    render();
+    toast('Backup restaurado');
+  }
+}
+
+/* ====================== REGISTRAR / EDITAR (MODAL) ====================== */
+function openRegistrar(){
+  modal = { type:'registrar', form: { id:null, data: todayISO(), tipo:'Aplicativo', plataforma:'uber', valor:'', km:'', combustivel:'', outrasDespesas:'', horas:'', obs:'' } };
+  render();
+}
+function openEditar(id){
+  const l = state.lancamentos.find(x=>x.id===id);
+  if(!l) return;
+  modal = { type:'editar', form: {...l} };
+  render();
+}
+function closeModal(){ modal=null; render(); }
+
+function renderModal(){
+  const f = modal.form;
+  const isEdit = modal.type==='editar';
+  const platBtns = PLATAFORMAS.map(p=>`
+    <div class="plat-btn ${f.plataforma===p.id?'sel':''}" onclick="setFormField('plataforma','${p.id}')">
+      <span class="ico">${p.ico}</span>${p.nome}
+    </div>`).join('');
+
+  const html = `
+  <div class="modal-bg" onclick="if(event.target===this)closeModal()">
+    <div class="modal" style="position:relative;">
+      <button class="closeX" onclick="closeModal()">✕</button>
+      <h2>${isEdit?'Editar Lançamento':'Novo Lançamento'}</h2>
+      <p style="color:var(--muted);font-size:13px;margin:0 0 6px;">Registre uma corrida, diária ou dia de trabalho</p>
+
+      <label>Tipo</label>
+      <div class="type-toggle">
+        <button class="${f.tipo==='Aplicativo'?'sel':''}" onclick="setFormField('tipo','Aplicativo')">📱 Aplicativo</button>
+        <button class="${f.tipo==='Particular'?'sel':''}" onclick="setFormField('tipo','Particular')">🤝 Particular</button>
+      </div>
+
+      <label>Plataforma</label>
+      <div class="plataforma-grid">${platBtns}</div>
+
+      <label>Data</label>
+      <input type="date" value="${f.data}" onchange="setFormField('data',this.value,false)">
+
+      <label>Valor Ganho (R$)</label>
+      <input type="number" inputmode="decimal" value="${f.valor}" oninput="setFormField('valor',this.value,false)" placeholder="0,00">
+
+      <div class="grid2">
+        <div><label>KM Rodado</label><input type="number" value="${f.km}" oninput="setFormField('km',this.value,false)" placeholder="0"></div>
+        <div><label>Horas Trabalhadas</label><input type="number" step="0.5" value="${f.horas}" oninput="setFormField('horas',this.value,false)" placeholder="0"></div>
+      </div>
+      <div class="grid2">
+        <div><label>Combustível (R$)</label><input type="number" value="${f.combustivel}" oninput="setFormField('combustivel',this.value,false)" placeholder="0,00"></div>
+        <div><label>Outras Despesas (R$)</label><input type="number" value="${f.outrasDespesas}" oninput="setFormField('outrasDespesas',this.value,false)" placeholder="0,00"></div>
+      </div>
+
+      <label>Observação (opcional)</label>
+      <textarea rows="2" oninput="setFormField('obs',this.value,false)">${f.obs||''}</textarea>
+
+      <div style="height:16px;"></div>
+      <button class="btn solid" onclick="salvarLancamento()">✔ Salvar Lançamento</button>
+      ${isEdit? `<div style="height:10px;"></div><button class="btn danger" onclick="excluirLancamento('${f.id}')">🗑 Excluir</button>` : ''}
+    </div>
+  </div>`;
+  document.getElementById('app').insertAdjacentHTML('beforeend', html);
+}
+
+function setFormField(k,v,doRender=true){ modal.form[k]=v; if(doRender) render(); }
+
+function salvarLancamento(){
+  const f = modal.form;
+  if(!f.valor || Number(f.valor)<=0){ alert('Informe o valor ganho.'); return; }
+  if(modal.type==='registrar'){
+    state.lancamentos.push({
+      id: uid(), data:f.data, tipo:f.tipo, plataforma:f.plataforma,
+      valor:Number(f.valor)||0, km:Number(f.km)||0, combustivel:Number(f.combustivel)||0,
+      outrasDespesas:Number(f.outrasDespesas)||0, horas:Number(f.horas)||0, obs:f.obs||'',
+      createdAt: Date.now()
+    });
+    toast('Lançamento registrado');
+  } else {
+    const i = state.lancamentos.findIndex(x=>x.id===f.id);
+    if(i>-1){
+      state.lancamentos[i] = {
+        ...state.lancamentos[i], data:f.data, tipo:f.tipo, plataforma:f.plataforma,
+        valor:Number(f.valor)||0, km:Number(f.km)||0, combustivel:Number(f.combustivel)||0,
+        outrasDespesas:Number(f.outrasDespesas)||0, horas:Number(f.horas)||0, obs:f.obs||''
+      };
+    }
+    toast('Lançamento atualizado');
+  }
+  saveData();
+  modal = null;
+  render();
+}
+
+function excluirLancamento(id){
+  if(confirm('Excluir este lançamento? Ele ainda poderá ser recuperado através de um backup automático.')){
+    state.lancamentos = state.lancamentos.filter(x=>x.id!==id);
+    saveData();
+    modal = null;
+    render();
+    toast('Lançamento excluído');
+  }
+}
+
+/* ====================== INIT ====================== */
+state = loadState();
+if(!localStorage.getItem(STORAGE_KEY)){ saveData(); }
+render();
+
+// Autosave de segurança extra (garante persistência mesmo em fechamentos abruptos)
+window.addEventListener('beforeunload', ()=>{ try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){} });
+</script>
+</body>
+</html>
